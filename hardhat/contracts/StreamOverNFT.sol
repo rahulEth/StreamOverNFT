@@ -213,7 +213,7 @@ contract StreamOverNFT is ERC4907 {
         );
 
         uint256 index;
-        address _serviceProvider = idToNftItem[_tokenId].owner;
+        // address _serviceProvider = idToNftItem[_tokenId].owner;
 
         for (uint256 i = 0; i < totalLendServices; i++) {
             if (forLendServices[i].tokenId == _tokenId) index = i;
