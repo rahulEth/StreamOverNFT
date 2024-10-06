@@ -1,19 +1,22 @@
-import type { Config } from "tailwindcss";
-
-const config: Config = {
-  content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
+module.exports = {
+  content: ['./pages/**/*.{html,js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
-      colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+      backgroundImage: {
+        // custom backgrounds here...
       },
-    },
+
+      fontSize: {
+        big: ['70px'],
+        small: ['12px'],
+        web_normal: ['14px'],
+        web_large: ['36px'],
+        web_title: ['48px'],
+        mobile_normal: ['10px'],
+        mobile_large: ['24px'],
+        mobile_title: ['36px']
+      }
+    }
   },
-  plugins: [],
-};
-export default config;
+  plugins: []
+}
