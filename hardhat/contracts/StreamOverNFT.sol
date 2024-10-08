@@ -22,6 +22,7 @@ contract StreamOverNFT is ERC4907 {
         uint256 serviceid;
         string name;
         string ImageUri;
+        string cdnUrl;
         string description;
         uint64 planDuration;
         uint256 price;
@@ -33,6 +34,7 @@ contract StreamOverNFT is ERC4907 {
         uint256 serviceid;
         string serviceName;
         string ImageUri;
+        string cdnUrl;
         string description;
         uint256 duration;
         uint64 endTime;
@@ -113,6 +115,7 @@ contract StreamOverNFT is ERC4907 {
     function AddServiceToStreamOverNFT(
         string memory _name,
         string memory _ImageUri,
+        string memory _cdnUrl,
         string memory _description,
         uint64 _planDuration,
         uint256 _planPrice
@@ -121,6 +124,7 @@ contract StreamOverNFT is ERC4907 {
             serviceid: totalServices,
             name: _name,
             ImageUri: _ImageUri,
+            cdnUrl: _cdnUrl,
             description: _description,
             planDuration: _planDuration,
             price: _planPrice,
@@ -142,7 +146,7 @@ contract StreamOverNFT is ERC4907 {
         uint64 _time = uint64(block.timestamp + service.planDuration);
         uint256 _price = service.price;
 
-        require(_price == msg.value, "Please send the equivalent amount");
+        require(_price <= msg.value, "Please send the equivalent amount");
         service.serviceProvider.transfer(msg.value);
 
         // Mint a expirable NFT by setting approval for the contract address first
@@ -150,6 +154,7 @@ contract StreamOverNFT is ERC4907 {
             _serviceid,
             service.name,
             service.ImageUri,
+            service.cdnUrl,
             service.description,
             service.planDuration,
             _time,
@@ -227,13 +232,14 @@ contract StreamOverNFT is ERC4907 {
         uint256 _serviceid,
         string memory _serviceName,
         string memory _imageUri,
+        string memory _cdnUrl,
         string memory _description,
         uint64 _duration,
         uint64 _endTime,
         uint256 _price,
         address _owner,
         address _serviceProvider
-    ) public {
+    ) internal {
         require(_price > 0, "Price must be at least 1 wei");
         uint256 tokenID = tID;
         tID = tID + 1;
@@ -249,6 +255,7 @@ contract StreamOverNFT is ERC4907 {
             serviceid: _serviceid,
             serviceName: _serviceName,
             ImageUri: _imageUri,
+            cdnUrl: _cdnUrl,
             description: _description,
             duration: _duration,
             endTime: _endTime,
@@ -268,12 +275,6 @@ contract StreamOverNFT is ERC4907 {
         setUser(tokenID, msg.sender, _days);
         payable(idToNftItem[tokenID].owner).transfer(_amount);
         idToNftItem[tokenID].owner = payable(msg.sender);
-    }
-
-    // get functions for web3
-
-    function getTotalServices() public view returns (uint256) {
-        return totalServices;
     }
 
     function getNFTDetailsByTokenId(uint256 _tokenID)
