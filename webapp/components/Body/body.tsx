@@ -5,9 +5,9 @@ export default function Body() {
   return (
     <div className='flex h-[75vh] flex-col lg:mx-64  lg:my-5 my-24 lg:px-4 lg:w-3/4 '>
       <div className=' text-5xl font-bold text-blue text-start lg:w-3/4 pt-5'>
-        Skip the expensive subscriptions! Buy or rent your favorite shows from OTT platforms like
+        Skip the expensive OTT subscriptions! Buy or rent content directly from your favorite local creators and regional producers.
         <TypeAnimation
-          sequence={['Netflix', 1200, 'Disney+', 1200, 'Amazon Prime', 1200, 'HBO Max', 1200]}
+          sequence={['Videos', 1200, 'Music', 1200, 'Regional Movies', 1200, 'Photos', 1200]}
           wrapper='span'
           speed={40}
           style={{ width: '100%', display: 'inline-block' }}
