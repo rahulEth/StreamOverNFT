@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import 'react-alice-carousel/lib/alice-carousel.css';
+
 html,
 body {
   margin: 0%;
