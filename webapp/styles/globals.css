@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import 'react-alice-carousel/lib/alice-carousel.css';
+
+html,
+body {
+  margin: 0%;
+  padding: 0%;
+  overflow-x: hidden;
+  height: 100vh;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.main {
+  background-color: #e5e5f7;
+  opacity: 0.8;
+  background-image: radial-gradient(#444cf7 0.5px, transparent 0.5px),
+    radial-gradient(#444cf7 0.5px, #e5e5f7 0.5px);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
+}
+
+button {
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.cards {
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
