@@ -28,16 +28,16 @@ async function main() {
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+// main().catch((error) => {
+//   console.error(error);
+//   process.exitCode = 1;
+// });
 
 
 const verifyContract = async ()=>{
   console.log("Verifying Zkpass...")
   await hre.run("verify:verify", {
-    address: '0x923376511b498a0C1f2581c2E639C341998e3723',   //lock.address
+    address: '0xCB0ce918aB27c9CaBE604614F2E1AF07b4aD1e1D',   //lock.address
   })
 }
 // verifyContract()

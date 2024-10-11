@@ -15,6 +15,11 @@ module.exports = {
       }
     ]
   },
+  etherscan: {
+    apiKey: {
+      baseSepolia: process.env.BASE_SCAN_TESTNET
+    }
+  },
   networks: {
     BaseSepoliaTestnet:{
       url: `https://base-sepolia.infura.io/v3/${INFURA_API_KEY}`,
