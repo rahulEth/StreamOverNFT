@@ -130,10 +130,9 @@ contract StreamOverNFT is ERC4907 {
             price: _planPrice,
             serviceProvider: payable(msg.sender)
         });
-
+        
         serviceProviderToIds[msg.sender].push(totalServices);
 
-        totalServices = totalServices + 1;
     }
 
     function BuyServiceFromServiceProvider(uint256 _serviceid)
@@ -175,7 +174,7 @@ contract StreamOverNFT is ERC4907 {
             idToNftItem[_tokenId].owner == msg.sender,
             "You are not the owner of this token"
         );
-
+        totalLendServices = totalLendServices + 1;
         Lend storage newLendPlan = forLendServices.push();
         newLendPlan.tokenId = _tokenId;
         newLendPlan.price = _amount;
@@ -184,7 +183,7 @@ contract StreamOverNFT is ERC4907 {
 
         forLendServices.push(newLendPlan);
         userForLendPlans[msg.sender].push(totalLendServices);
-        totalLendServices = totalLendServices + 1;
+
 
         // remove token from user availble plans
 
@@ -212,6 +211,10 @@ contract StreamOverNFT is ERC4907 {
         uint64 _days,
         uint256 _amount
     ) public {
+        require(
+            idToNftItem[_tokenId].serviceid !=0,
+            "show is not available for rent"
+        );
         require(
             idToNftItem[_tokenId].owner != msg.sender,
             "You are already the owner of this token"
@@ -275,6 +278,12 @@ contract StreamOverNFT is ERC4907 {
         setUser(tokenID, msg.sender, _days);
         payable(idToNftItem[tokenID].owner).transfer(_amount);
         idToNftItem[tokenID].owner = payable(msg.sender);
+    }
+
+    // get functions for web3
+
+    function getTotalServices() public view returns (uint256) {
+        return totalServices;
     }
 
     function getNFTDetailsByTokenId(uint256 _tokenID)
