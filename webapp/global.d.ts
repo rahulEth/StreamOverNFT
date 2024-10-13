@@ -1,58 +1,58 @@
 interface Window {
-  ethereum: any;
+  ethereum: any
 }
 
 interface IMetadata {
-  name: string;
-  description: string;
-  attributes: IAttribute[];
-  image: string;
+  name: string
+  description: string
+  attributes: IAttribute[]
+  image: string
 }
 
-interface EazyVideoContextInterface {
-  account: string;
-  walletConnected: boolean;
-  web3: string;
-  SubsNFTContract: Contract;
-  accountType: number;
+interface StreamOverNftContextInterface {
+  account: string
+  walletConnected: boolean
+  web3: string
+  SubsNFTContract: Contract
+  accountType: number
 }
 
 interface ServiceMetadata {
-  name: string;
-  ImageUri: string;
-  description: string;
-  planDuration: number;
-  price: number;
-  serviceProvider: string;
-  serviceid: number;
+  name: string
+  ImageUri: string
+  description: string
+  planDuration: number
+  price: number
+  serviceProvider: string
+  serviceid: number
 }
 
 interface IPFSMetadata {
-  name: string;
-  description: string;
-  perDayPrice: string;
-  duration: string;
-  image: string;
+  name: string
+  description: string
+  perDayPrice: string
+  duration: string
+  image: string
 }
 
 interface NFTMetadata {
-  serviceid: number;
-  serviceName: string;
-  ImageUri: string;
-  description: string;
-  duration: number;
-  endTime: string;
-  price: number;
-  owner: string;
-  serviceProvider: string;
+  serviceid: number
+  serviceName: string
+  ImageUri: string
+  description: string
+  duration: number
+  endTime: string
+  price: number
+  owner: string
+  serviceProvider: string
 }
 
 interface LendMetadata {
-  tokenId: number;
-  price: number;
-  duration: number;
-  renter: string;
-  NFT: NFTMetadata;
+  tokenId: number
+  price: number
+  duration: number
+  renter: string
+  NFT: NFTMetadata
 }
 
 //IPFSMetadata
