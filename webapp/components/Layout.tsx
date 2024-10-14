@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { StreamOverNftContext } from '../utils/StreamOverNftContext'
 import Web3 from 'web3'
-import contractAbi from '../abis/streamOverNftContract.json' // Import your contract ABI
+import contractAbi from '../abis/streamOverNftContract.json'
 
 const Layout = ({ children }: any) => {
   const router = useRouter()

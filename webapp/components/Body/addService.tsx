@@ -4,7 +4,6 @@ import { create } from 'ipfs-http-client'
 import { StreamOverNftContext } from '@/utils/StreamOverNftContext'
 import Moralis from 'moralis'
 import Web3 from 'web3'
-import { ethers } from 'ethers'
 
 export default function AddService() {
   const [fileUrl, setFileUrl] = useState(null)
@@ -85,11 +84,6 @@ export default function AddService() {
         'account',
         state.account
       )
-
-      const options = {
-        gasLimit: ethers.utils.hexlify(300000), // Set the gas limit (adjust based on your contract)
-        gasPrice: ethers.utils.parseUnits('20', 'gwei') // Set the gas price manually (e.g., 20 Gwei)
-      }
       await state?.SubsNFTContract.methods
         .AddServiceToStreamOverNFT(
           formInput.name,
@@ -97,11 +91,12 @@ export default function AddService() {
           formInput.content,
           formInput.description,
           formInput.duration,
-          web3.utils.toBN(+formInput.perDayPrice * 10 ** 18),
-          options
+          web3.utils.toBN(+formInput.perDayPrice * 10 ** 18)
         )
         .send({
-          from: state.account
+          from: state.account,
+          gas: 2100000,
+          gasPrice: 8000000000
         })
       alert('Congrats!! we have successfully added your service to our platform')
     } catch (error) {
