@@ -1,13 +1,167 @@
 import { useEffect, useState, useContext, useCallback } from 'react'
 import Image from 'next/image'
 import Loader from '../Loader'
+import axios from 'axios'
+import moment from 'moment'
+import { StreamOverNftContext } from '@/utils/StreamOverNftContext'
 export default function LendCard() {
+  const { state } = useContext(StreamOverNftContext)
   const [userAvailableServices, setUserAvailableServices] = useState<NFTMetadata[]>([])
   const [userForLendServices, setUserForLendServices] = useState<LendMetadata[]>([])
   const [formInput, updateFormInput] = useState({
     tokenid: 0,
     price: 0,
     duration: 0
+  })
+
+  const lendService = async (item: NFTMetadata) => {
+    updateFormInput({ ...formInput, tokenid: item.serviceid })
+    const { tokenid, price, duration } = formInput
+    if (!price || !duration || !tokenid) return
+    const data = JSON.stringify({
+      tokenid,
+      price,
+      duration
+    })
+    try {
+      await state?.SubsNFTContract.methods
+        .LendUserNFTPlan(formInput.tokenid, formInput.duration, formInput.price)
+        .send({
+          from: state.account
+        })
+      alert('Congrats!! we have successfully added your service for lending')
+    } catch (error) {
+      console.log('error:', error)
+    }
+  }
+
+  const loadUserAvaialableServices = useCallback(async () => {
+    try {
+      var servicesArray = await state?.SubsNFTContract.methods
+        .fetchAllUserAvailableNFTShows()
+        .call({
+          from: state.account
+        })
+
+      for (var i = 0; i < servicesArray.length; i++) {
+        var NFTPlan = await state?.SubsNFTContract.methods.idToNftItem(servicesArray[i]).call({
+          from: state.account
+        })
+        var date = moment.unix(NFTPlan.endTime)
+        var item: NFTMetadata
+        const metadata = await axios.get(NFTPlan.ImageUri)
+
+        if (metadata.data.image == undefined) {
+          item = {
+            serviceid: NFTPlan.serviceid,
+            serviceName: NFTPlan.serviceName,
+            ImageUri: 'https://ipfs.infura.io/ipfs/QmUr2JP3nAF6E4Q12mgC5M1geFt7F4y6QHUqZFE9wgMZt7',
+            description: NFTPlan.description,
+            duration: NFTPlan.duration,
+            endTime: date.toString(),
+            price: NFTPlan.price,
+            owner: NFTPlan.owner,
+            serviceProvider: NFTPlan.serviceProvider
+          }
+        } else {
+          item = {
+            serviceid: NFTPlan.serviceid,
+            serviceName: NFTPlan.serviceName,
+            ImageUri: metadata.data.image,
+            description: NFTPlan.description,
+            duration: NFTPlan.duration,
+            endTime: date.toString(),
+            price: NFTPlan.price,
+            owner: NFTPlan.owner,
+            serviceProvider: NFTPlan.serviceProvider
+          }
+        }
+
+        setUserAvailableServices((userAvailableServices) => [...userAvailableServices, NFTPlan])
+      }
+    } catch (error) {
+      console.log('error:', error)
+    }
+  }, [state, userAvailableServices])
+
+  const loadUserForLendServices = useCallback(async () => {
+    try {
+      var totalLendServices = await state?.SubsNFTContract.methods.totalLendServices().call({
+        from: state.account
+      })
+
+      console.log('totalLendServices:', totalLendServices)
+
+      for (var i = 0; i < totalLendServices; i++) {
+        var servicesArray = await state?.SubsNFTContract.methods.allLendShowsByIndex(i).call({
+          from: state.account
+        })
+        var nftArray = await state?.SubsNFTContract.methods.services(servicesArray.tokenId).call({
+          from: state.account
+        })
+      }
+      console.log('servicesArray', servicesArray)
+
+      var item: LendMetadata = {
+        tokenId: servicesArray.tokenId,
+        price: servicesArray.price,
+        duration: servicesArray.duration,
+        renter: servicesArray.renter,
+        NFT: nftArray
+      }
+
+      const metadata = await axios.get(item.NFT.ImageUri)
+
+      if (metadata.data.image == undefined) {
+        item = {
+          tokenId: servicesArray.tokenId,
+          price: servicesArray.price,
+          duration: servicesArray.duration,
+          renter: servicesArray.renter,
+          NFT: {
+            serviceid: nftArray.serviceid,
+            serviceName: nftArray.serviceName,
+            ImageUri: 'https://ipfs.infura.io/ipfs/QmUr2JP3nAF6E4Q12mgC5M1geFt7F4y6QHUqZFE9wgMZt7',
+            description: nftArray.description,
+            duration: nftArray.duration,
+            endTime: nftArray.endTime,
+            price: nftArray.price,
+            owner: nftArray.owner,
+            serviceProvider: nftArray.serviceProvider
+          }
+        }
+      } else {
+        item = {
+          tokenId: servicesArray.tokenId,
+          price: servicesArray.price,
+          duration: servicesArray.duration,
+          renter: servicesArray.renter,
+          NFT: {
+            serviceid: nftArray.serviceid,
+            serviceName: nftArray.serviceName,
+            ImageUri: metadata.data.image,
+            description: nftArray.description,
+            duration: nftArray.duration,
+            endTime: nftArray.endTime,
+            price: nftArray.price,
+            owner: nftArray.owner,
+            serviceProvider: nftArray.serviceProvider
+          }
+        }
+      }
+      setUserForLendServices((userForLendServices) => [...userForLendServices, item])
+    } catch (error) {
+      console.log('error:', error)
+    }
+  }, [state, userForLendServices])
+
+  useEffect(() => {
+    if (state?.walletConnected && userAvailableServices.length === 0) {
+      loadUserAvaialableServices()
+    }
+    if (state?.walletConnected && userForLendServices.length === 0) {
+      loadUserForLendServices()
+    }
   })
 
   return (
@@ -62,7 +216,9 @@ export default function LendCard() {
                     Days
                   </div>
                   <div className='px-1 cursor-pointer py-1 mt-5 w-2/4 h-10 mx-auto flex flex-row bg-purple hover:brightness-105 hover:scale-105 rounded-full items-center justify-center'>
-                    <button className='inline-block '>Lend</button>
+                    <button onClick={() => lendService(item)} className='inline-block '>
+                      Lend
+                    </button>
                   </div>
                 </div>
               </div>

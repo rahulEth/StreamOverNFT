@@ -1,9 +1,92 @@
 import { useEffect, useState, useContext, useCallback } from 'react'
 import Loader from '../Loader'
 import Image from 'next/image'
+import axios from 'axios'
+import { StreamOverNftContext } from '@/utils/StreamOverNftContext'
 
 export default function RentCard() {
   const [forLendServices, setForLendServices] = useState<LendMetadata[]>([])
+  const { state } = useContext(StreamOverNftContext)
+
+  const loadForLendServices = useCallback(async () => {
+    try {
+      var userLendArray = await state?.SubsNFTContract.methods.fetchAllUserLendNFTShows().call({
+        from: state.account
+      })
+
+      console.log('forLendArray', userLendArray)
+
+      for (var index = 0; index < userLendArray.length; index++) {
+        var servicesArray = await state?.SubsNFTContract.methods
+          .allLendShowsByIndex(userLendArray[0])
+          .call({
+            from: state.account
+          })
+
+        var nftArray = await state?.SubsNFTContract.methods.services(servicesArray.tokenId).call({
+          from: state.account
+        })
+      }
+
+      var item: LendMetadata = {
+        tokenId: servicesArray.tokenId,
+        price: servicesArray.price,
+        duration: servicesArray.duration,
+        renter: servicesArray.renter,
+        NFT: nftArray
+      }
+
+      const metadata = await axios.get(item.NFT.ImageUri)
+
+      if (metadata.data.image == undefined) {
+        item = {
+          tokenId: servicesArray.tokenId,
+          price: servicesArray.price,
+          duration: servicesArray.duration,
+          renter: servicesArray.renter,
+          NFT: {
+            serviceid: nftArray.serviceid,
+            serviceName: nftArray.serviceName,
+            ImageUri: 'https://ipfs.infura.io/ipfs/QmUr2JP3nAF6E4Q12mgC5M1geFt7F4y6QHUqZFE9wgMZt7',
+            description: nftArray.description,
+            duration: nftArray.duration,
+            endTime: nftArray.endTime,
+            price: nftArray.price,
+            owner: nftArray.owner,
+            serviceProvider: nftArray.serviceProvider
+          }
+        }
+      } else {
+        item = {
+          tokenId: servicesArray.tokenId,
+          price: servicesArray.price,
+          duration: servicesArray.duration,
+          renter: servicesArray.renter,
+          NFT: {
+            serviceid: nftArray.serviceid,
+            serviceName: nftArray.serviceName,
+            ImageUri: metadata.data.image,
+            description: nftArray.description,
+            duration: nftArray.duration,
+            endTime: nftArray.endTime,
+            price: nftArray.price,
+            owner: nftArray.owner,
+            serviceProvider: nftArray.serviceProvider
+          }
+        }
+      }
+      setForLendServices((forLendServices) => [...forLendServices, item])
+    } catch (error) {
+      console.log('error:', error)
+    }
+  }, [state, setForLendServices])
+
+  useEffect(() => {
+    if (state?.walletConnected && forLendServices.length === 0) {
+      loadForLendServices()
+    }
+    console.log('forLendServices:', forLendServices)
+  })
 
   return (
     <div>

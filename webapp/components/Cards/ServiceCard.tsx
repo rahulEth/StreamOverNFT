@@ -1,22 +1,63 @@
 import Image from 'next/image'
 import { useState, useContext, useEffect, useCallback } from 'react'
 import Loader from '../Loader'
+import axios from 'axios'
 import { mockServices } from '@/utils/constants'
+import { StreamOverNftContext } from '@/utils/StreamOverNftContext'
 
 export default function ServiceCard() {
+  const { state } = useContext(StreamOverNftContext)
   const [services, setServices] = useState<ServiceMetadata[]>([])
 
-  const loadServices = async () => {
+  const loadServices = useCallback(async () => {
     try {
-      setServices(mockServices)
+      for (let i = 0; i <= 5; i++) {
+        var serviceId = await state?.SubsNFTContract.methods
+          .serviceProviderToIds(state.account, i)
+          .call({
+            from: state.account
+          })
+
+        if (serviceId != undefined) {
+          var service = await state?.SubsNFTContract.methods.services(serviceId).call({
+            from: state.account
+          })
+          var item: ServiceMetadata
+          const metadata = await axios.get(service.ImageUri)
+          if (metadata.data.image == undefined) {
+            item = {
+              name: service.name,
+              ImageUri:
+                'https://ipfs.infura.io/ipfs/QmUr2JP3nAF6E4Q12mgC5M1geFt7F4y6QHUqZFE9wgMZt7',
+              description: service.description,
+              planDuration: service.planDuration,
+              price: service.price,
+              serviceProvider: service.serviceProvider,
+              serviceid: service.serviceid
+            }
+          } else {
+            item = {
+              name: service.name,
+              ImageUri: metadata.data.image,
+              description: service.description,
+              planDuration: service.planDuration,
+              price: service.price,
+              serviceProvider: service.serviceProvider,
+              serviceid: service.serviceid
+            }
+          }
+          setServices((services) => [...services, item])
+        } else break
+      }
     } catch (error) {
-      console.error('Error:', error)
+      console.log('error:', error)
     }
-  }
+  }, [state])
 
   useEffect(() => {
-    loadServices()
-
+    if (state?.walletConnected && services.length === 0) {
+      loadServices()
+    }
     console.log(services)
   })
 
